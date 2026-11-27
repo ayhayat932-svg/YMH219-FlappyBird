@@ -21,12 +21,20 @@ public sealed class GameRenderer : IDisposable
         (40, 70, 1.0f), (210, 120, 0.7f), (330, 50, 1.2f), (120, 190, 0.6f), (470, 150, 0.9f)
     };
 
+    // Yıldızların sabit konumları (rastgele ama her çizimde aynı olsun diye sabit tohum)
+    private static readonly PointF[] Stars = CreateStars(45);
+
+    /// <summary>Kullanılan renk teması (gündüz / gece).</summary>
+    public ThemePalette Palette { get; set; } = ThemePalette.Day;
+
     public void Draw(Graphics g, GameEngine engine)
     {
         g.SmoothingMode = SmoothingMode.AntiAlias;
         g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
 
         DrawSky(g);
+        if (Palette.ShowStars)
+            DrawStarsAndMoon(g, engine.TickCount);
         DrawClouds(g, engine.TickCount, engine.State);
         DrawHills(g);
 
@@ -56,21 +64,52 @@ public sealed class GameRenderer : IDisposable
 
     // ------------------------------------------------------------------ Arka plan
 
-    private static void DrawSky(Graphics g)
+    private void DrawSky(Graphics g)
     {
         var rect = new Rectangle(0, 0, GameEngine.WorldWidth, GameEngine.PlayAreaHeight);
-        using var sky = new LinearGradientBrush(rect, Color.FromArgb(92, 172, 238),
-            Color.FromArgb(196, 232, 250), LinearGradientMode.Vertical);
+        using var sky = new LinearGradientBrush(rect, Palette.SkyTop, Palette.SkyBottom, LinearGradientMode.Vertical);
         g.FillRectangle(sky, rect);
     }
 
-    private static void DrawClouds(Graphics g, long tick, GameState state)
+    private static PointF[] CreateStars(int count)
+    {
+        var rnd = new Random(7);
+        var stars = new PointF[count];
+        for (int i = 0; i < count; i++)
+            stars[i] = new PointF(rnd.Next(0, GameEngine.WorldWidth), rnd.Next(0, GameEngine.PlayAreaHeight - 150));
+        return stars;
+    }
+
+    private static void DrawStarsAndMoon(Graphics g, long tick)
+    {
+        for (int i = 0; i < Stars.Length; i++)
+        {
+            // Her yıldız farklı hızda parıldar.
+            int alpha = 120 + (int)(Math.Sin(tick * 0.05 + i) * 100);
+            using var brush = new SolidBrush(Color.FromArgb(Math.Clamp(alpha, 30, 255), 255, 255, 230));
+            float size = i % 3 == 0 ? 3f : 2f;
+            g.FillEllipse(brush, Stars[i].X, Stars[i].Y, size, size);
+        }
+
+        // Hilal: bir daireden, kaydırılmış ikinci bir daire çıkarılarak elde edilir.
+        using var moonPath = new GraphicsPath();
+        moonPath.AddEllipse(300, 40, 54, 54);
+        using var cutPath = new GraphicsPath();
+        cutPath.AddEllipse(316, 30, 54, 54);
+        using var crescent = new Region(moonPath);
+        crescent.Exclude(cutPath);
+
+        using var moon = new SolidBrush(Color.FromArgb(250, 245, 210));
+        g.FillRegion(moon, crescent);
+    }
+
+    private void DrawClouds(Graphics g, long tick, GameState state)
     {
         // Bulutlar oyundan bağımsız olarak çok yavaş kayar (paralaks etkisi).
         float drift = state == GameState.GameOver ? 0 : tick * 0.25f;
         const float loopWidth = GameEngine.WorldWidth + 200;
 
-        using var brush = new SolidBrush(Color.FromArgb(235, 255, 255, 255));
+        using var brush = new SolidBrush(Palette.Cloud);
         foreach (var (x, y, scale) in Clouds)
         {
             float cx = ((x - drift) % loopWidth + loopWidth) % loopWidth - 100;
@@ -81,11 +120,11 @@ public sealed class GameRenderer : IDisposable
         }
     }
 
-    private static void DrawHills(Graphics g)
+    private void DrawHills(Graphics g)
     {
         float baseY = GameEngine.PlayAreaHeight;
-        using var far = new SolidBrush(Color.FromArgb(140, 200, 170));
-        using var near = new SolidBrush(Color.FromArgb(110, 180, 140));
+        using var far = new SolidBrush(Palette.FarHills);
+        using var near = new SolidBrush(Palette.NearHills);
 
         g.FillEllipse(far, -60, baseY - 110, 260, 220);
         g.FillEllipse(far, 180, baseY - 140, 300, 280);
@@ -142,7 +181,7 @@ public sealed class GameRenderer : IDisposable
         DrawCenteredText(g, "SPACE / ↑ / Fare tıkı: Zıpla", infoFont, card.Y + 30);
         DrawCenteredText(g, $"Zorluk: {engine.Difficulty.DisplayName}", smallFont, card.Y + 64);
         DrawCenteredText(g, $"En yüksek skor: {engine.HighScore}", smallFont, card.Y + 90);
-        DrawCenteredText(g, "P: Duraklat   M: Ses   F2: Yeni oyun", smallFont, card.Y + 116);
+        DrawCenteredText(g, "P: Duraklat  M: Ses  T: Tema  F3: Skorlar", smallFont, card.Y + 116);
     }
 
     private void DrawPausedOverlay(Graphics g)

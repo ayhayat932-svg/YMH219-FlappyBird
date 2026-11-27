@@ -109,6 +109,10 @@ public partial class MainForm : Form
                 ToggleSound();
                 break;
 
+            case Keys.T:
+                ToggleTheme();
+                break;
+
             default:
                 return; // Diğer tuşlar (F2, Alt+F4 ...) menüye bırakılır.
         }
@@ -197,6 +201,8 @@ public partial class MainForm : Form
 
     private void MenuSound_Click(object? sender, EventArgs e) => ToggleSound();
 
+    private void MenuNightTheme_Click(object? sender, EventArgs e) => ToggleTheme();
+
     private void MenuControls_Click(object? sender, EventArgs e)
     {
         WithPause(() => MessageBox.Show(this,
@@ -205,7 +211,8 @@ public partial class MainForm : Form
             "R veya F2 : Yeni oyun\n" +
             "F3 : Skor tablosu (ilk 10)\n" +
             "Enter : Game Over ekranında yeniden başlat\n" +
-            "M : Sesi aç / kapat\n\n" +
+            "M : Sesi aç / kapat\n" +
+            "T : Gündüz / gece teması\n\n" +
             "Her engelden geçişte 1 puan kazanılır. Her 5 puanda seviye ve hız artar.",
             "Kontroller", MessageBoxButtons.OK, MessageBoxIcon.Information));
     }
@@ -226,6 +233,14 @@ public partial class MainForm : Form
         sounds.Enabled = !sounds.Enabled;
         menuSound.Checked = sounds.Enabled;
         UpdateStatusBar();
+    }
+
+    /// <summary>Gündüz ve gece teması arasında geçiş yapar.</summary>
+    private void ToggleTheme()
+    {
+        renderer.Palette = renderer.Palette == ThemePalette.Day ? ThemePalette.Night : ThemePalette.Day;
+        menuNightTheme.Checked = renderer.Palette == ThemePalette.Night;
+        gamePanel.Invalidate();
     }
 
     /// <summary>Bir diyalog gösterilirken oyunu duraklatır.</summary>

@@ -44,6 +44,7 @@ namespace FlappyBird
             menuHard = new ToolStripMenuItem();
             menuSettings = new ToolStripMenuItem();
             menuSound = new ToolStripMenuItem();
+            menuNightTheme = new ToolStripMenuItem();
             menuHelp = new ToolStripMenuItem();
             menuControls = new ToolStripMenuItem();
             menuAbout = new ToolStripMenuItem();
@@ -131,7 +132,7 @@ namespace FlappyBird
             //
             // menuSettings
             //
-            menuSettings.DropDownItems.AddRange(new ToolStripItem[] { menuSound });
+            menuSettings.DropDownItems.AddRange(new ToolStripItem[] { menuSound, menuNightTheme });
             menuSettings.Name = "menuSettings";
             menuSettings.Text = "&Ayarlar";
             //
@@ -143,6 +144,13 @@ namespace FlappyBird
             menuSound.ShortcutKeyDisplayString = "M";
             menuSound.Text = "&Ses Efektleri";
             menuSound.Click += MenuSound_Click;
+            //
+            // menuNightTheme
+            //
+            menuNightTheme.Name = "menuNightTheme";
+            menuNightTheme.ShortcutKeyDisplayString = "T";
+            menuNightTheme.Text = "&Gece Teması";
+            menuNightTheme.Click += MenuNightTheme_Click;
             //
             // menuHelp
             //
@@ -257,6 +265,7 @@ namespace FlappyBird
         private ToolStripMenuItem menuHard;
         private ToolStripMenuItem menuSettings;
         private ToolStripMenuItem menuSound;
+        private ToolStripMenuItem menuNightTheme;
         private ToolStripMenuItem menuHelp;
         private ToolStripMenuItem menuControls;
         private ToolStripMenuItem menuAbout;
