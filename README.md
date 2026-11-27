@@ -10,10 +10,14 @@
 |:---:|:---:|:---:|
 | ![Başlangıç ekranı](docs/screenshots/01-baslangic.png) | ![Oyun ekranı](docs/screenshots/02-oyun.png) | ![Game Over ekranı](docs/screenshots/03-game-over.png) |
 
+| Gece teması | Skor tablosu (ilk 10) |
+|:---:|:---:|
+| ![Gece teması](docs/screenshots/04-gece.png) | ![Skor tablosu](docs/screenshots/05-skor-tablosu.png) |
+
 ## Kullanılan Teknolojiler
 
 - C# (.NET 10)
-- Windows Forms (`Form`, `Panel`, `MenuStrip`, `StatusStrip`, `Timer`)
+- Windows Forms (`Form`, `Panel`, `MenuStrip`, `StatusStrip`, `Timer`, `TabControl`, `ListView`)
 - GDI+ (`System.Drawing`) ile çizim
 - `System.Media.SoundPlayer` ile ses efektleri
 - Harici NuGet paketi **kullanılmamıştır**
@@ -41,6 +45,8 @@ dotnet run --project FlappyBird/FlappyBird.csproj
 | `R` / `F2` | Yeni oyun |
 | `Enter` | Game Over ekranında yeniden başlat |
 | `M` | Sesi aç / kapat |
+| `T` | Gündüz / gece teması |
+| `F3` | Skor tablosu (ilk 10) |
 | `F1` | Kontroller penceresi |
 
 ## Temel Özellikler
@@ -54,10 +60,11 @@ dotnet run --project FlappyBird/FlappyBird.csproj
 - Hız, skor, seviye ve oyun durumu `GameEngine` sınıfının özelliklerinde tutulur ve durum çubuğunda gösterilir.
 
 **İsteğe bağlı geliştirmeler**
-- **En yüksek skor dosyada saklanır:** Her zorluk seviyesi için ayrı tutulur (`%AppData%\YMH219-FlappyBird\highscores.txt`).
+- **En yüksek skor dosyada saklanır:** Her zorluk seviyesi için **ilk 10 skor**; skor, ulaşılan seviye ve tarih bilgisiyle `%AppData%\YMH219-FlappyBird\highscores.txt` dosyasında tutulur. `Oyun → Skor Tablosu` (F3) penceresinde her zorluk ayrı bir sekmede listelenir ve tablo, onay alındıktan sonra temizlenebilir. Game Over ekranında oyunun tablodaki sırası gösterilir.
 - **Seviye ilerledikçe hız artar:** Her 5 puanda seviye atlanır ve engeller hızlanır.
 - **Ses efektleri:** Zıplama, puan, seviye atlama ve çarpma sesleri, harici dosya gerekmeden kod içinde üretilir.
 - **Zorluk seviyeleri:** Kolay, Normal ve Zor seviyelerinde başlangıç hızı ve boşluk yüksekliği farklıdır.
+- **Gece teması:** `Ayarlar → Gece Teması` veya `T` tuşuyla, parıldayan yıldızlar ve hilal içeren gece arka planına geçilir.
 - Pencere odağı kaybedildiğinde oyun otomatik olarak duraklar.
 
 ## Proje Yapısı ve Sınıf Tasarımı
@@ -66,6 +73,7 @@ dotnet run --project FlappyBird/FlappyBird.csproj
 FlappyBird/
 ├── Program.cs                  Giriş noktası, genel hata yakalama
 ├── MainForm.cs / .Designer.cs  Pencere: Timer, KeyDown/KeyUp, menü, durum çubuğu
+├── ScoreBoardForm.cs / .Designer.cs  İlk 10 skor tablosu penceresi
 ├── Game/
 │   ├── GameObject.cs           Konumu ve boyutu olan nesneler için soyut temel sınıf
 │   ├── Bird.cs                 Oyuncu (GameObject'ten türer): yer çekimi, zıplama, çizim
@@ -74,9 +82,11 @@ FlappyBird/
 │   ├── GameState.cs            Ready / Playing / Paused / GameOver
 │   └── DifficultySettings.cs   Zorluk seviyesi ayarları
 ├── Rendering/
-│   └── GameRenderer.cs         Arka plan, zemin, skor ve bilgi ekranlarının çizimi
+│   ├── GameRenderer.cs         Arka plan, zemin, skor ve bilgi ekranlarının çizimi
+│   └── ThemePalette.cs         Gündüz / gece renk temaları
 ├── Services/
-│   ├── HighScoreRepository.cs  En yüksek skorun dosyaya okunması/yazılması
+│   ├── HighScoreRepository.cs  İlk 10 skorun dosyaya okunması/yazılması
+│   ├── ScoreEntry.cs           Skor kaydı (skor, seviye, tarih)
 │   └── SoundEffects.cs         Ses efektleri
 └── Controls/
     └── GamePanel.cs            Titreşimsiz çizim için çift tamponlu panel
@@ -94,7 +104,8 @@ FlappyBird/
 - Oyun döngüsü `System.Windows.Forms.Timer` ile kare tabanlıdır. Bu yüzden çok yavaş bilgisayarlarda oyun biraz yavaşlayabilir.
 - `SoundPlayer` aynı anda tek ses çalabildiği için art arda gelen sesler birbirini kesebilir.
 - Uygulama yalnızca Windows'ta çalışır (Windows Forms).
-- Gelecekte eklenebilecekler: görsel temalar, skor tablosu (ilk 10), oyun kumanda desteği.
+- Seçilen tema bir sonraki açılışta hatırlanmaz; oyun her zaman gündüz temasıyla başlar.
+- Gelecekte eklenebilecekler: tema ve ses tercihinin kaydedilmesi, oyun kumandası desteği, farklı kuş görünümleri.
 
 ## Öğrenci Bilgileri
 
