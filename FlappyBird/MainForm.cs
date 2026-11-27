@@ -172,6 +172,18 @@ public partial class MainForm : Form
 
     private void MenuExit_Click(object? sender, EventArgs e) => Close();
 
+    private void MenuScoreBoard_Click(object? sender, EventArgs e)
+    {
+        WithPause(() =>
+        {
+            using var dialog = new ScoreBoardForm(highScores, engine.Difficulty.Level);
+            dialog.ShowDialog(this);
+
+            if (dialog.WasCleared)
+                UpdateStatusBar();
+        });
+    }
+
     private void MenuDifficulty_Click(object? sender, EventArgs e)
     {
         DifficultyLevel level = sender == menuEasy ? DifficultyLevel.Easy
@@ -191,6 +203,7 @@ public partial class MainForm : Form
             "SPACE / ↑ / W / Sol tık : Zıpla (oyunu başlatır)\n" +
             "P veya ESC : Duraklat / Devam\n" +
             "R veya F2 : Yeni oyun\n" +
+            "F3 : Skor tablosu (ilk 10)\n" +
             "Enter : Game Over ekranında yeniden başlat\n" +
             "M : Sesi aç / kapat\n\n" +
             "Her engelden geçişte 1 puan kazanılır. Her 5 puanda seviye ve hız artar.",

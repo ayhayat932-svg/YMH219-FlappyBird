@@ -51,6 +51,9 @@ public sealed class GameEngine
     public float Speed { get; private set; }
     public bool IsNewHighScore { get; private set; }
 
+    /// <summary>Son oyunun skor tablosundaki sırası (tabloya giremediyse 0).</summary>
+    public int LastRank { get; private set; }
+
     /// <summary>Oyun başladığından beri geçen kare sayısı (animasyonlar için).</summary>
     public long TickCount { get; private set; }
 
@@ -78,6 +81,7 @@ public sealed class GameEngine
         Level = 1;
         Speed = Difficulty.BaseSpeed;
         IsNewHighScore = false;
+        LastRank = 0;
         CreatePipes();
 
         ScoreChanged?.Invoke(this, EventArgs.Empty);
@@ -209,7 +213,8 @@ public sealed class GameEngine
 
     private void EndGame()
     {
-        IsNewHighScore = highScores.TrySaveHighScore(Difficulty.Level, Score);
+        IsNewHighScore = Score > 0 && Score > HighScore;
+        LastRank = highScores.AddScore(Difficulty.Level, Score, Level);
         gameOverTick = TickCount;
         ChangeState(GameState.GameOver);
         Crashed?.Invoke(this, EventArgs.Empty);

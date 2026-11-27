@@ -171,6 +171,9 @@ public sealed class GameRenderer : IDisposable
 
         if (engine.IsNewHighScore)
             DrawOutlinedText(g, "YENİ REKOR!", 22, new PointF(cx, card.Y + 166), Color.FromArgb(255, 220, 60));
+        else if (engine.LastRank > 0)
+            DrawOutlinedText(g, $"Skor tablosunda {engine.LastRank}. sıra!", 18, new PointF(cx, card.Y + 166),
+                Color.FromArgb(150, 220, 255));
 
         if (engine.CanRestart)
         {

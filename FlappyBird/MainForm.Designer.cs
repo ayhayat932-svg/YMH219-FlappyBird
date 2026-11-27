@@ -35,6 +35,7 @@ namespace FlappyBird
             menuGame = new ToolStripMenuItem();
             menuNewGame = new ToolStripMenuItem();
             menuPause = new ToolStripMenuItem();
+            menuScoreBoard = new ToolStripMenuItem();
             menuSeparator1 = new ToolStripSeparator();
             menuExit = new ToolStripMenuItem();
             menuDifficulty = new ToolStripMenuItem();
@@ -68,7 +69,7 @@ namespace FlappyBird
             //
             // menuGame
             //
-            menuGame.DropDownItems.AddRange(new ToolStripItem[] { menuNewGame, menuPause, menuSeparator1, menuExit });
+            menuGame.DropDownItems.AddRange(new ToolStripItem[] { menuNewGame, menuPause, menuScoreBoard, menuSeparator1, menuExit });
             menuGame.Name = "menuGame";
             menuGame.Text = "&Oyun";
             //
@@ -85,6 +86,13 @@ namespace FlappyBird
             menuPause.ShortcutKeyDisplayString = "P";
             menuPause.Text = "&Duraklat / Devam";
             menuPause.Click += MenuPause_Click;
+            //
+            // menuScoreBoard
+            //
+            menuScoreBoard.Name = "menuScoreBoard";
+            menuScoreBoard.ShortcutKeys = Keys.F3;
+            menuScoreBoard.Text = "&Skor Tablosu";
+            menuScoreBoard.Click += MenuScoreBoard_Click;
             //
             // menuSeparator1
             //
@@ -240,6 +248,7 @@ namespace FlappyBird
         private ToolStripMenuItem menuGame;
         private ToolStripMenuItem menuNewGame;
         private ToolStripMenuItem menuPause;
+        private ToolStripMenuItem menuScoreBoard;
         private ToolStripSeparator menuSeparator1;
         private ToolStripMenuItem menuExit;
         private ToolStripMenuItem menuDifficulty;
